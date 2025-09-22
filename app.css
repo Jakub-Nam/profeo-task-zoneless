@@ -1,0 +1,11 @@
+@import 'tailwindcss/preflight' layer(base);
+@import 'tailwindcss/utilities' layer(utilities);
+
+@source './src/**/*.{html,ts}';
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+}

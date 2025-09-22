@@ -1,42 +1,76 @@
-<div class="min-h-screen flex flex-col items-center justify-center px-4 py-8">
-  <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">Lista Postów</h1>
+<div class="min-h-screen flex flex-col px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">Posts List</h1>
 
-  <div class="flex flex-wrap gap-6 justify-center items-start">
-    @for (post of posts(); track post.id) {
+  <!-- Filter component -->
+  <app-filters
+    [users]="users()"
+    (filterChange)="onContentFilterChange($event)"
+    (userIdFilterChange)="onUserIdFilterChange($event)"
+    (showOnlyFavoritesChange)="onShowOnlyFavoritesChange($event)"
+  ></app-filters>
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="w-full text-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+    <p class="text-gray-500 text-lg mt-4">Loading posts...</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+  <div class="w-full text-center py-12">
+    <p class="text-red-600 text-lg">{{ error() }}</p>
+  </div>
+  }
+
+  <!-- Posts Grid -->
+  @else {
+  <div class="flex flex-wrap gap-4 justify-center items-start">
+    @for (post of filteredPosts(); track post.id) {
     <article
-      class="w-[500px] h-[700px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col"
+      class="w-[250px] h-[350px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col cursor-pointer"
+      (click)="onPostClick(post.id)"
     >
-      <!-- Header z ID posta -->
-      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex-shrink-0">
+      <div class="px-4 py-2 bg-gray-50 border-b border-gray-200 flex-shrink-0 flex justify-between items-center">
         <span class="text-sm font-medium text-gray-500">Post #{{ post.id }}</span>
+        <button
+          (click)="onToggleFavorite(post.id); $event.stopPropagation()"
+          class="text-xl hover:scale-110 transition-transform duration-200"
+          [class.text-red-500]="isPostFavorite(post.id)"
+          [class.text-gray-400]="!isPostFavorite(post.id)"
+        >
+          @if (isPostFavorite(post.id)) {
+            ♥
+          } @else {
+            ♡
+          }
+        </button>
       </div>
 
-      <!-- Content area -->
-      <div class="px-6 py-4 flex-1 flex flex-col">
-        <!-- Tytuł posta -->
-        <h2 class="text-xl font-semibold text-gray-900 mb-3 leading-tight">
+      <div class="px-4 py-2 flex-1 flex flex-col">
+        <h2 class="text-sm font-semibold text-gray-900 mb-2 leading-tight">
           {{ post.title }}
         </h2>
 
-        <!-- Opis z elipsisem -->
         <p class="text-gray-600 leading-relaxed text-sm flex-1 overflow-hidden">
           {{ post.body }}
         </p>
       </div>
 
-      <!-- Footer z akcją -->
-      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex-shrink-0">
+      <div class="px-4 py-2 bg-gray-50 border-t border-gray-100 flex-shrink-0">
         <button
-          class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
+          class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200 w-full text-left"
+          (click)="onPostClick(post.id); $event.stopPropagation()"
         >
-          Czytaj więcej →
+          Read more →
         </button>
       </div>
     </article>
     } @empty {
     <div class="w-full text-center py-12">
-      <p class="text-gray-500 text-lg">Ładowanie postów...</p>
+      <p class="text-gray-500 text-lg">No posts found with current filters.</p>
     </div>
     }
   </div>
+  }
 </div>

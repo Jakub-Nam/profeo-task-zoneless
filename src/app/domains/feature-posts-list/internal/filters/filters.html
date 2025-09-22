@@ -1,0 +1,78 @@
+<div class="mb-8 flex justify-center">
+  <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-md max-w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+      <!-- Content Filter -->
+      <div class="space-y-2">
+        <label for="contentFilter" class="block text-sm font-medium text-gray-700">
+          Search in content:
+        </label>
+        <div class="flex items-center gap-2">
+          <input
+            id="contentFilter"
+            type="text"
+            [value]="filterText()"
+            (input)="onFilterChange($event)"
+            placeholder="Search posts..."
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-0"
+          />
+          @if (filterText()) {
+          <button
+            (click)="clearFilter()"
+            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors duration-200 cursor-pointer whitespace-nowrap"
+          >
+            Clear
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- User Filter -->
+      <div class="space-y-2">
+        <label for="userFilter" class="block text-sm font-medium text-gray-700">
+          Filter by user:
+        </label>
+        <div class="flex items-center gap-2">
+          <select
+            id="userFilter"
+            [value]="userIdFilter() || ''"
+            (change)="onUserIdFilterChange($event)"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">All users</option>
+            @for (user of users(); track user.id) {
+            <option [value]="user.id">{{ user.name }}</option>
+            }
+          </select>
+          @if (userIdFilter()) {
+          <button
+            (click)="clearUserFilter()"
+            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors duration-200 cursor-pointer whitespace-nowrap"
+          >
+            Clear
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Favorites Filter -->
+      <div class="space-y-2">
+        <label for="favoritesFilter" class="block text-sm font-medium text-gray-700">
+          Show only favorites:
+        </label>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-1">
+            <input
+              id="favoritesFilter"
+              type="checkbox"
+              [checked]="showOnlyFavorites()"
+              (change)="onShowOnlyFavoritesChange($event)"
+              class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+            />
+            <span class="text-sm text-gray-600">❤️ Only favorites</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
