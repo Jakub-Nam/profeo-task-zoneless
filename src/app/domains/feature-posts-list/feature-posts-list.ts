@@ -8,7 +8,6 @@ import { Router, RouterLink } from '@angular/router';
   selector: 'app-feature-posts-list',
   imports: [Filters, RouterLink],
   templateUrl: './feature-posts-list.html',
-  styleUrl: './feature-posts-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturePostsList implements OnInit {

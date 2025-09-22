@@ -10,12 +10,11 @@
           <input
             id="contentFilter"
             type="text"
-            [value]="contentFilter()"
-            (input)="onFilterChange($event)"
+            [formControl]="filtersForm.controls.contentFilter"
             placeholder="Search posts..."
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-0"
           />
-          @if (contentFilter()) {
+          @if (filtersForm.controls.contentFilter.value) {
           <button
             (click)="clearFilter()"
             class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors duration-200 cursor-pointer whitespace-nowrap"
@@ -33,16 +32,15 @@
         <div class="flex items-center gap-2">
           <select
             id="userFilter"
-            [ngModel]="userIdValue()"
-            (ngModelChange)="onUserIdFilterChange($event)"
+            [formControl]="filtersForm.controls.userIdFilter"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">All users</option>
+            <option [value]="null">All users</option>
             @for (user of users(); track user.id) {
             <option [value]="user.id">{{ user.name }}</option>
             }
           </select>
-          @if (userIdValue()) {
+          @if (filtersForm.controls.userIdFilter.value) {
           <button
             (click)="clearUserFilter()"
             class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors duration-200 cursor-pointer whitespace-nowrap"
@@ -62,8 +60,7 @@
             <input
               id="favoritesFilter"
               type="checkbox"
-              [checked]="showFavoritesValue()"
-              (change)="onShowOnlyFavoritesChange($event)"
+              [formControl]="filtersForm.controls.showOnlyFavorites"
               class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
             />
             <span class="text-sm text-gray-600">❤️ Only favorites</span>
