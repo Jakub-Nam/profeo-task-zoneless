@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnDestroy,
+  input,
+  effect,
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PostDetailsStore } from '../shared/stores/post-details.store';
 
@@ -10,18 +17,21 @@ import { PostDetailsStore } from '../shared/stores/post-details.store';
   styleUrl: './feature-post-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeaturePostDetails implements OnInit, OnDestroy {
-  private readonly route = inject(ActivatedRoute);
+export class FeaturePostDetails implements OnDestroy {
   private readonly router = inject(Router);
   private readonly postDetailsStore = inject(PostDetailsStore);
 
-  ngOnInit(): void {
-    const postId = Number(this.route.snapshot.paramMap.get('id'));
-    if (postId) {
-      this.postDetailsStore.loadPostDetails(postId);
-    } else {
-      this.router.navigate(['/']);
-    }
+  readonly id = input<string>();
+
+  constructor() {
+    effect(() => {
+      const postId = Number(this.id());
+      if (postId && !isNaN(postId)) {
+        this.postDetailsStore.loadPostDetails(postId);
+      } else if (this.id() !== undefined) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -37,7 +47,6 @@ export class FeaturePostDetails implements OnInit, OnDestroy {
       .toUpperCase();
   }
 
-  // Expose store signals to template
   protected get post() {
     return this.postDetailsStore.post;
   }
