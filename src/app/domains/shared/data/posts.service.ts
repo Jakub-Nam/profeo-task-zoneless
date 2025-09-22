@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../tokens/api.tokens';
-import { IPost, IUser, IComment } from '../models';
+import { IPost, IComment } from '../models';
 
 @Injectable({
   providedIn: 'root',
