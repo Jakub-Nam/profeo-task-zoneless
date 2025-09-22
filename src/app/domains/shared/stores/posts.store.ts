@@ -1,12 +1,5 @@
-import { computed, inject, effect } from '@angular/core';
-import {
-  signalStore,
-  withState,
-  withMethods,
-  withComputed,
-  patchState,
-  withHooks,
-} from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
 import { PostsService } from '../data/posts.service';
 import { IPost } from '../models/post.interface';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -22,36 +15,14 @@ export interface PostsState {
   showOnlyFavorites: boolean;
 }
 
-const FAVORITES_KEY = 'favorite_posts';
-
-const saveToLocalStorage = <T>(key: string, data: T): void => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error('Failed to save to localStorage:', error);
-  }
-};
-
-const loadFromLocalStorage = <T>(key: string): T | null => {
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : null;
-  } catch (error) {
-    console.error('Failed to load from localStorage:', error);
-    return null;
-  }
-};
-
 const getInitialState = (): PostsState => {
-  const favoritePosts = loadFromLocalStorage<number[]>(FAVORITES_KEY) || [];
-
   return {
     posts: [],
     loading: false,
     error: null,
     contentFilter: '',
     userIdFilter: null,
-    favoritePosts,
+    favoritePosts: [],
     showOnlyFavorites: false,
   };
 };
@@ -153,14 +124,5 @@ export const PostsStore = signalStore(
         loadPosts(store.userIdFilter());
       },
     };
-  }),
-
-  withHooks({
-    onInit(store) {
-      effect(() => {
-        const favorites = store.favoritePosts();
-        saveToLocalStorage(FAVORITES_KEY, favorites);
-      });
-    },
   })
 );

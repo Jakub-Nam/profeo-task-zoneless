@@ -16,7 +16,7 @@
 
 - Click heart icons (♡/♥) to toggle favorites
 - Empty hearts (♡) for non-favorites, filled red hearts (♥) for favorites
-- Persistent storage in localStorage with automatic save/load
+- In-memory favorites management with session-based persistence
 - Real-time UI updates with signal-based reactivity
 
 ### 📄 Post Details View
@@ -80,7 +80,7 @@ src/app/
 │       ├── data/                        # Data access layer
 │       │   ├── posts.service.ts         # Posts API service
 │       │   ├── users.service.ts         # Users API service
-│       │   └── favorites.service.ts     # Favorites localStorage service
+│       │   └── favorites.service.ts     # Favorites in-memory service
 │       │
 │       ├── stores/                      # Signal stores with @ngrx/signals
 │       │   ├── posts.store.ts           # Main posts & filters state
@@ -145,10 +145,10 @@ src/app/
 **PostsStore**
 
 - Core posts and filtering state management
-- Effects for localStorage favorites auto-save
+- Reactive state updates for favorites
 - Computed filtered posts with reactive dependencies
 - API-level user filtering optimization
-- SessionStorage caching with expiration
+- Simplified data flow without persistence
 
 **UsersStore**
 
@@ -179,11 +179,11 @@ src/app/
 - Shared across stores for consistent data access
 - Optimized for caching strategies
 
-**FavoritesService** (Persistence)
+**FavoritesService** (In-Memory)
 
-- LocalStorage favorites management
-- Singleton pattern for consistent state
-- Automatic serialization/deserialization
+- In-memory favorites management
+- Signal-based reactive state
+- Session-scoped favorites (reset on refresh)
 - Cross-component state sharing
 
 **GanttService** (Mock Data)
@@ -220,15 +220,15 @@ src/app/
 
 **State Management**
 - @ngrx/signals with withState, withMethods, withComputed
-- Store effects with withHooks for lifecycle management
+- Signal-based reactive state management
 - Computed signals for reactive filtered data
-- Automatic localStorage synchronization
+- Simplified data flow without persistence overhead
 
 **Performance Optimizations**
 - Separate stores for different concerns (posts, users, post-details)
 - API-level filtering for users to reduce client-side processing
-- SessionStorage caching with expiration timestamps
-- ShareReplay pattern for users data across components
+- Clean HTTP service layer without caching complexity
+- Direct API calls for fresh data on each request
 
 **Developer Experience**
 - Comprehensive TypeScript interfaces
@@ -250,7 +250,7 @@ src/app/
 ✅ **Scalable State Management**
 
 - @ngrx/signals with comprehensive store features
-- Effects for side effect management (localStorage auto-save)
+- Signal-based reactive state management
 - Computed signals for efficient re-rendering
 - Separate stores prevent data coupling issues
 
