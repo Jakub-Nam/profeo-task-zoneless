@@ -11,7 +11,12 @@
           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            ></path>
           </svg>
           Back to Posts
         </button>
@@ -44,7 +49,10 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div class="bg-gray-50 border-b border-gray-200 p-4">
         <div class="flex justify-between items-center text-sm text-gray-600">
-          <span>Timeline: {{ data.timeline.start | formatDate }} - {{ data.timeline.end | formatDate }}</span>
+          <span
+            >Timeline: {{ data.timeline.start | formatDate }} -
+            {{ data.timeline.end | formatDate }}</span
+          >
           <span>Total: {{ data.timeline.totalDays }} days | {{ data.posts.length }} posts</span>
         </div>
       </div>
@@ -107,7 +115,9 @@
                   [style.left.%]="getDayPosition(post.startDate, data.timeline)"
                   style="transform: translateX(-50%)"
                 >
-                  {{ post.startDate | formatDate : 'short' }}-{{ post.endDate | formatDate : 'short' }}
+                  {{ post.startDate | formatDate : 'short' }}-{{
+                    post.endDate | formatDate : 'short'
+                  }}
                 </div>
                 }
               </div>

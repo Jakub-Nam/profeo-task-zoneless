@@ -34,10 +34,9 @@ export class GanttService {
   }
 
   private createGanttPost(post: IPost, index: number): IGanttPost {
-    // Generujemy mocki dat na podstawie ID posta
     const baseDate = new Date('2025-01-01');
-    const startOffset = (post.id * 3 + index) % 90; // 0-90 dni od base date
-    const duration = 7 + (post.id % 14); // 7-21 dni
+    const startOffset = (post.id * 3 + index) % 90;
+    const duration = 7 + (post.id % 14);
 
     const startDate = new Date(baseDate);
     startDate.setDate(baseDate.getDate() + startOffset);
@@ -45,7 +44,6 @@ export class GanttService {
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + duration);
 
-    // Generujemy progress i kategorie na podstawie ID
     const progress = Math.min(100, (post.id * 7) % 101);
     const categories: IGanttPost['category'][] = ['planning', 'development', 'review', 'completed'];
     const category = categories[post.id % categories.length];
