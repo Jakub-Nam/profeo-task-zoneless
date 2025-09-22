@@ -13,4 +13,11 @@ export const routes: Routes = [
         (m) => m.FeaturePostDetails
       ),
   },
+  {
+    path: 'gantt',
+    loadComponent: () =>
+      import('./domains/feature-gantt-view/feature-gantt-view').then(
+        (m) => m.FeatureGanttView
+      ),
+  },
 ];

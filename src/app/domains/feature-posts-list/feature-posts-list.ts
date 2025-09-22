@@ -7,11 +7,11 @@ import {
 import { PostsStore } from '../shared/stores/posts.store';
 import { UsersStore } from '../shared/stores/users.store';
 import { Filters } from './internal/filters/filters';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-feature-posts-list',
-  imports: [Filters],
+  imports: [Filters, RouterLink],
   templateUrl: './feature-posts-list.html',
   styleUrl: './feature-posts-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
