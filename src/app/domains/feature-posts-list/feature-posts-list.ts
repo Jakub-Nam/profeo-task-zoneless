@@ -10,7 +10,7 @@ import { PostsService } from '../shared/data/posts.service';
 import { IPost } from '../shared/models/post.interface';
 import { IUser } from '../shared/models/user.interface';
 import { Filters } from './internal/filters/filters';
-import { FavoritesService } from '../../services/favorites.service';
+import { FavoritesService } from '../shared/data/favorites.service';
 import { Router } from '@angular/router';
 
 @Component({
