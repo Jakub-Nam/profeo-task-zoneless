@@ -6,7 +6,7 @@ import {
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
-import { API_BASE_URL } from './tokens/api.tokens';
+import { API_BASE_URL, POSTS_API_URL } from './tokens/api.tokens';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,6 +17,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: API_BASE_URL,
       useValue: 'https://jsonplaceholder.typicode.com',
+    },
+    {
+      provide: POSTS_API_URL,
+      useValue: 'https://jsonplaceholder.typicode.com/posts',
     },
   ],
 };

@@ -4,9 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-feature-post-details',
   imports: [],
   templateUrl: './feature-post-details.html',
-  styleUrl: './feature-post-details.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './feature-post-details.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeaturePostDetails {
-
-}
+export class FeaturePostDetails {}
