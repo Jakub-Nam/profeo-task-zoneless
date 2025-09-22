@@ -19,16 +19,8 @@ export class PostsService {
     return this.http.get<IPost[]>(`${this.apiConfig.posts}?userId=${userId}`);
   }
 
-  public getUsers(): Observable<IUser[]> {
-    return this.http.get<IUser[]>(this.apiConfig.users);
-  }
-
   public getPostById(id: number): Observable<IPost> {
     return this.http.get<IPost>(`${this.apiConfig.posts}/${id}`);
-  }
-
-  public getUserById(id: number): Observable<IUser> {
-    return this.http.get<IUser>(`${this.apiConfig.users}/${id}`);
   }
 
   public getPostComments(postId: number): Observable<IComment[]> {

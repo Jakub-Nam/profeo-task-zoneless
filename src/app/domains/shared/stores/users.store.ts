@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { patchState, signalStore, withMethods, withState, withHooks } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
-import { PostsService } from '../data/posts.service';
+import { UsersService } from '../data/users.service';
 import type { IUser } from '../models';
 
 interface UsersState {
@@ -20,12 +20,12 @@ const initialState: UsersState = {
 export const UsersStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, postsService = inject(PostsService)) => ({
+  withMethods((store, usersService = inject(UsersService)) => ({
     loadUsers: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(() =>
-          postsService.getUsers().pipe(
+          usersService.getUsers().pipe(
             tap((users) => patchState(store, { users, loading: false })),
             catchError((error) => {
               patchState(store, { error: 'Failed to load users', loading: false });
