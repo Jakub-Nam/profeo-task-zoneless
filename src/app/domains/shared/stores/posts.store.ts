@@ -9,7 +9,6 @@ import {
 } from '@ngrx/signals';
 import { PostsService } from '../data/posts.service';
 import { IPost } from '../models/post.interface';
-import { IUser } from '../models/user.interface';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
 
@@ -21,31 +20,9 @@ export interface PostsState {
   userIdFilter: number | null;
   favoritePosts: number[];
   showOnlyFavorites: boolean;
-  lastFetchTime: number | null;
-  lastUserIdFilter: number | null;
 }
 
-const POSTS_CACHE_KEY = 'posts_cache';
 const FAVORITES_KEY = 'favorite_posts';
-const CACHE_EXPIRY = 5 * 60 * 1000;
-
-const saveToSessionStorage = <T>(key: string, data: T): void => {
-  try {
-    sessionStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error('Failed to save to sessionStorage:', error);
-  }
-};
-
-const loadFromSessionStorage = <T>(key: string): T | null => {
-  try {
-    const item = sessionStorage.getItem(key);
-    return item ? JSON.parse(item) : null;
-  } catch (error) {
-    console.error('Failed to load from sessionStorage:', error);
-    return null;
-  }
-};
 
 const saveToLocalStorage = <T>(key: string, data: T): void => {
   try {
@@ -65,36 +42,17 @@ const loadFromLocalStorage = <T>(key: string): T | null => {
   }
 };
 
-const shouldRefreshCache = (
-  lastFetchTime: number | null,
-  currentUserFilter: number | null,
-  cachedUserFilter: number | null
-): boolean => {
-  if (!lastFetchTime) return true;
-  if (currentUserFilter !== cachedUserFilter) return true;
-  if (Date.now() - lastFetchTime > CACHE_EXPIRY) return true;
-  return false;
-};
-
 const getInitialState = (): PostsState => {
-  const cachedData = loadFromSessionStorage<{
-    posts: IPost[];
-    lastFetchTime: number;
-    lastUserIdFilter: number | null;
-  }>(POSTS_CACHE_KEY);
-
   const favoritePosts = loadFromLocalStorage<number[]>(FAVORITES_KEY) || [];
 
   return {
-    posts: cachedData?.posts || [],
+    posts: [],
     loading: false,
     error: null,
     contentFilter: '',
-    userIdFilter: cachedData?.lastUserIdFilter || null,
+    userIdFilter: null,
     favoritePosts,
     showOnlyFavorites: false,
-    lastFetchTime: cachedData?.lastFetchTime || null,
-    lastUserIdFilter: cachedData?.lastUserIdFilter || null,
   };
 };
 
@@ -136,19 +94,10 @@ export const PostsStore = signalStore(
 
           return apiCall.pipe(
             tap((posts) => {
-              const now = Date.now();
               patchState(store, {
                 posts,
                 loading: false,
                 userIdFilter: userId,
-                lastFetchTime: now,
-                lastUserIdFilter: userId,
-              });
-
-              saveToSessionStorage(POSTS_CACHE_KEY, {
-                posts,
-                lastFetchTime: now,
-                lastUserIdFilter: userId,
               });
             }),
             catchError((error) => {
@@ -176,32 +125,12 @@ export const PostsStore = signalStore(
       },
 
       setUserIdFilter: (userId: number | null) => {
-        const shouldRefresh = shouldRefreshCache(
-          store.lastFetchTime(),
-          userId,
-          store.lastUserIdFilter()
-        );
-
-        if (shouldRefresh) {
-          patchState(store, { userIdFilter: userId });
-          loadPosts(userId);
-        } else {
-          patchState(store, { userIdFilter: userId });
-        }
+        patchState(store, { userIdFilter: userId });
+        loadPosts(userId);
       },
       clearUserIdFilter: () => {
-        const shouldRefresh = shouldRefreshCache(
-          store.lastFetchTime(),
-          null,
-          store.lastUserIdFilter()
-        );
-
-        if (shouldRefresh) {
-          patchState(store, { userIdFilter: null });
-          loadPosts(null);
-        } else {
-          patchState(store, { userIdFilter: null });
-        }
+        patchState(store, { userIdFilter: null });
+        loadPosts(null);
       },
 
       toggleFavorite: (postId: number) => {
@@ -221,15 +150,7 @@ export const PostsStore = signalStore(
 
       // Initialize store
       init: () => {
-        const shouldRefresh = shouldRefreshCache(
-          store.lastFetchTime(),
-          store.userIdFilter(),
-          store.lastUserIdFilter()
-        );
-
-        if (shouldRefresh) {
-          loadPosts(store.userIdFilter());
-        }
+        loadPosts(store.userIdFilter());
       },
     };
   }),

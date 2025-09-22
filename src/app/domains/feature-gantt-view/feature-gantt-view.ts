@@ -10,7 +10,6 @@ import { FormatDatePipe } from '../shared/pipes/format-date.pipe';
   selector: 'app-feature-gantt-view',
   imports: [CommonModule, RouterLink, FormatDatePipe],
   templateUrl: './feature-gantt-view.html',
-  styleUrl: './feature-gantt-view.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeatureGanttView {

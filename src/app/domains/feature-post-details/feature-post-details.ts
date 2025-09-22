@@ -14,7 +14,6 @@ import { PostDetailsStore } from '../shared/stores/post-details.store';
   selector: 'app-feature-post-details',
   imports: [CommonModule, RouterLink],
   templateUrl: './feature-post-details.html',
-  styleUrl: './feature-post-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturePostDetails implements OnDestroy {

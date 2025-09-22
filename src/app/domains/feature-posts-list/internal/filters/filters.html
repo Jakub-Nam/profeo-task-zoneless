@@ -1,7 +1,6 @@
 <div class="mb-8 flex justify-center">
   <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-md max-w-full">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-      <!-- Content Filter -->
       <div class="space-y-2">
         <label for="contentFilter" class="block text-sm font-medium text-gray-700">
           Search in content:
@@ -35,7 +34,7 @@
             [formControl]="filtersForm.controls.userIdFilter"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option [value]="null">All users</option>
+            <option [value]="">All users</option>
             @for (user of users(); track user.id) {
             <option [value]="user.id">{{ user.name }}</option>
             }

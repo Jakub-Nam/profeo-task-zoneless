@@ -1,11 +1,19 @@
-﻿import { ChangeDetectionStrategy, Component, output, input, OnInit, inject } from '@angular/core';
+﻿import {
+  ChangeDetectionStrategy,
+  Component,
+  output,
+  input,
+  OnInit,
+  inject,
+  DestroyRef,
+} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { IUser } from '../../../shared/models/user.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface IFiltersForm {
   contentFilter: FormControl<string>;
-  userIdFilter: FormControl<number | null>;
+  userIdFilter: FormControl<string | null>;
   showOnlyFavorites: FormControl<boolean>;
 }
 
@@ -17,6 +25,7 @@ interface IFiltersForm {
 })
 export class Filters implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   public readonly users = input<IUser[]>([]);
   public readonly contentFilter = input<string>('');
@@ -32,7 +41,7 @@ export class Filters implements OnInit {
   constructor() {
     this.filtersForm = this.fb.group<IFiltersForm>({
       contentFilter: this.fb.control('', { nonNullable: true }),
-      userIdFilter: this.fb.control<number | null>(null),
+      userIdFilter: this.fb.control<string | null>(null),
       showOnlyFavorites: this.fb.control(false, { nonNullable: true }),
     });
   }
@@ -40,23 +49,27 @@ export class Filters implements OnInit {
   ngOnInit(): void {
     this.filtersForm.patchValue({
       contentFilter: this.contentFilter(),
-      userIdFilter: this.userIdValue(),
+      userIdFilter: this.userIdValue()?.toString() ?? null,
       showOnlyFavorites: this.showFavoritesValue(),
     });
 
     this.filtersForm
       .get('contentFilter')
-      ?.valueChanges.pipe(takeUntilDestroyed())
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.filterChange.emit(value));
 
     this.filtersForm
       .get('userIdFilter')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((value: number | null) => this.userIdFilterChange.emit(value));
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: string | null) => {
+        // Convert string to number or null for the API
+        const numericValue = value === null || value === '' ? null : parseInt(value, 10);
+        this.userIdFilterChange.emit(numericValue);
+      });
 
     this.filtersForm
       .get('showOnlyFavorites')
-      ?.valueChanges.pipe(takeUntilDestroyed())
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.showOnlyFavoritesChange.emit(value));
   }
 

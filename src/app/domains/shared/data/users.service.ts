@@ -1,8 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable, InjectionToken, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, shareReplay } from 'rxjs';
+import { Observable, of, shareReplay, takeUntil } from 'rxjs';
 import { API_CONFIG } from '../../../tokens/api.tokens';
 import { IUser } from '../models';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -10,25 +11,24 @@ import { IUser } from '../models';
 export class UsersService {
   private readonly http = inject(HttpClient);
   private readonly apiConfig = inject(API_CONFIG);
-  private users$: Observable<IUser[]> | null = null;
+  private readonly destroyRef = inject(DestroyRef);
 
   public getUsers(): Observable<IUser[]> {
-    if (!this.users$) {
-      this.users$ = this.http.get<IUser[]>(this.apiConfig.users).pipe(shareReplay(1));
-    }
-    return this.users$;
+    return this.http.get<IUser[]>(this.apiConfig.users).pipe(takeUntilDestroyed(this.destroyRef));
   }
 
   public getUserById(id: number): Observable<IUser | undefined> {
     return new Observable((observer) => {
-      this.getUsers().subscribe({
-        next: (users) => {
-          const user = users.find((u) => u.id === id);
-          observer.next(user);
-          observer.complete();
-        },
-        error: (error) => observer.error(error),
-      });
+      this.getUsers()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (users) => {
+            const user = users.find((u) => u.id === id);
+            observer.next(user);
+            observer.complete();
+          },
+          error: (error) => observer.error(error),
+        });
     });
   }
 }
