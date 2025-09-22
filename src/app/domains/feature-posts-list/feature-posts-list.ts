@@ -45,7 +45,7 @@ export class FeaturePostsList implements OnInit {
   }
 
   protected onPostClick(postId: number): void {
-    this.router.navigate(['/post', postId]);
+    this.router.navigate(['/posts', postId]);
   }
 
   // Expose store signals to template
