@@ -1,12 +1,14 @@
-import { computed, inject } from '@angular/core';
-import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
+import { computed, inject, effect } from '@angular/core';
+import { signalStore, withState, withMethods, withComputed, patchState, withHooks } from '@ngrx/signals';
 import { PostsService } from '../data/posts.service';
 import { IPost } from '../models/post.interface';
+import { IUser } from '../models/user.interface';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
 
 export interface PostsState {
   posts: IPost[];
+  users: IUser[];
   loading: boolean;
   error: string | null;
   contentFilter: string;
@@ -17,12 +19,11 @@ export interface PostsState {
   lastUserIdFilter: number | null;
 }
 
-// SessionStorage keys
 const POSTS_CACHE_KEY = 'posts_cache';
 const FAVORITES_KEY = 'favorite_posts';
-const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
+const CACHE_EXPIRY = 5 * 60 * 1000;
 
-// Helper functions for sessionStorage
+// SessionStorage for posts cache
 const saveToSessionStorage = <T>(key: string, data: T): void => {
   try {
     sessionStorage.setItem(key, JSON.stringify(data));
@@ -37,6 +38,25 @@ const loadFromSessionStorage = <T>(key: string): T | null => {
     return item ? JSON.parse(item) : null;
   } catch (error) {
     console.error('Failed to load from sessionStorage:', error);
+    return null;
+  }
+};
+
+// LocalStorage for favorites (persistent)
+const saveToLocalStorage = <T>(key: string, data: T): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error);
+  }
+};
+
+const loadFromLocalStorage = <T>(key: string): T | null => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (error) {
+    console.error('Failed to load from localStorage:', error);
     return null;
   }
 };
@@ -60,10 +80,11 @@ const getInitialState = (): PostsState => {
     lastUserIdFilter: number | null;
   }>(POSTS_CACHE_KEY);
 
-  const favoritePosts = loadFromSessionStorage<number[]>(FAVORITES_KEY) || [];
+  const favoritePosts = loadFromLocalStorage<number[]>(FAVORITES_KEY) || [];
 
   return {
     posts: cachedData?.posts || [],
+    users: [], // Will be loaded by init method
     loading: false,
     error: null,
     contentFilter: '',
@@ -82,10 +103,8 @@ export const PostsStore = signalStore(
     filteredPosts: computed(() => {
       let posts = store.posts();
 
-      // Filter by userId if set
-      if (store.userIdFilter()) {
-        posts = posts.filter((post) => post.userId === store.userIdFilter());
-      }
+      // Note: userId filtering is done at API level via getPostsByUser(userId)
+      // No need for local filtering by userId here
 
       // Filter by content if set
       const contentFilter = store.contentFilter().toLowerCase();
@@ -112,11 +131,26 @@ export const PostsStore = signalStore(
     }),
   })),
   withMethods((store, postsService = inject(PostsService)) => {
+    const loadUsers = rxMethod<void>(
+      pipe(
+        switchMap(() => {
+          return postsService.getUsers().pipe(
+            tap((users) => {
+              patchState(store, { users });
+            }),
+            catchError((error) => {
+              console.error('Error loading users:', error);
+              return EMPTY;
+            })
+          );
+        })
+      )
+    );
+
     const loadPosts = rxMethod<number | null>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((userId) => {
-          console.log('API call triggered with userId:', userId);
           const apiCall = userId ? postsService.getPostsByUser(userId) : postsService.getPosts();
 
           return apiCall.pipe(
@@ -151,6 +185,7 @@ export const PostsStore = signalStore(
     );
 
     return {
+      loadUsers,
       loadPosts,
 
       // Content filter methods
@@ -169,8 +204,6 @@ export const PostsStore = signalStore(
           userId,
           store.lastUserIdFilter()
         );
-
-        console.log('setUserIdFilter called with:', userId, 'shouldRefresh:', shouldRefresh);
 
         if (shouldRefresh) {
           patchState(store, { userIdFilter: userId });
@@ -205,9 +238,7 @@ export const PostsStore = signalStore(
           : [...favorites, postId];
 
         patchState(store, { favoritePosts: newFavorites });
-
-        // Save favorites to sessionStorage
-        saveToSessionStorage(FAVORITES_KEY, newFavorites);
+        // Side effect handled by effect() below
       },
 
       setShowOnlyFavorites: (show: boolean) => {
@@ -216,24 +247,30 @@ export const PostsStore = signalStore(
 
       // Initialize store
       init: () => {
+        // Always load users first (they're needed for UI)
+        loadUsers();
+        
         const shouldRefresh = shouldRefreshCache(
           store.lastFetchTime(),
           store.userIdFilter(),
           store.lastUserIdFilter()
         );
 
-        console.log(
-          'init called, shouldRefresh:',
-          shouldRefresh,
-          'userIdFilter:',
-          store.userIdFilter()
-        );
-
-        // Only load from API if we need to refresh cache
         if (shouldRefresh) {
           loadPosts(store.userIdFilter());
         }
       },
     };
+  }),
+
+  // Hooks for lifecycle and effects
+  withHooks({
+    onInit(store) {
+      // Auto-save favorites to localStorage on every change
+      effect(() => {
+        const favorites = store.favoritePosts();
+        saveToLocalStorage(FAVORITES_KEY, favorites);
+      });
+    }
   })
 );

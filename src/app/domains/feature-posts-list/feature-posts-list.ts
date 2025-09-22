@@ -3,14 +3,9 @@ import {
   Component,
   inject,
   OnInit,
-  signal,
-  computed,
 } from '@angular/core';
-import { PostsService } from '../shared/data/posts.service';
-import { IPost } from '../shared/models/post.interface';
-import { IUser } from '../shared/models/user.interface';
+import { PostsStore } from '../shared/stores/posts.store';
 import { Filters } from './internal/filters/filters';
-import { FavoritesService } from '../shared/data/favorites.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -21,101 +16,46 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturePostsList implements OnInit {
-  private readonly postsService = inject(PostsService);
-  private readonly favoritesService = inject(FavoritesService);
+  private readonly postsStore = inject(PostsStore);
   private readonly router = inject(Router);
 
-  protected readonly posts = signal<IPost[]>([]);
-  protected readonly users = signal<IUser[]>([]);
-  protected readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
-  protected readonly contentFilter = signal('');
-  protected readonly userIdFilter = signal<number | null>(null);
-  protected readonly showOnlyFavorites = signal(false);
-
-  // Computed filtered posts
-  protected readonly filteredPosts = computed(() => {
-    let posts = this.posts();
-    const filter = this.contentFilter().toLowerCase();
-
-    // Filter by content if set
-    if (filter) {
-      posts = posts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(filter) || post.body.toLowerCase().includes(filter)
-      );
-    }
-
-    // Filter by favorites if enabled
-    if (this.showOnlyFavorites()) {
-      const favoriteIds = this.favoritesService.getFavoriteIds();
-      posts = posts.filter((post) => favoriteIds.includes(post.id));
-    }
-
-    return posts;
-  });
-
   public ngOnInit(): void {
-    this.loadUsers();
-    this.loadPosts();
+    this.postsStore.init(); // Store will now load both users and posts
   }
 
-  private loadUsers(): void {
-    this.postsService.getUsers().subscribe({
-      next: (users) => {
-        this.users.set(users);
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-      },
-    });
-  }
-
-  private loadPosts(): void {
-    this.loading.set(true);
-    this.error.set(null);
-
-    const userId = this.userIdFilter();
-    const apiCall = userId
-      ? this.postsService.getPostsByUser(userId)
-      : this.postsService.getPosts();
-
-    apiCall.subscribe({
-      next: (posts) => {
-        this.posts.set(posts);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        console.error('Error loading posts:', error);
-        this.error.set('Failed to load posts');
-        this.loading.set(false);
-      },
-    });
-  }
-
+  // Delegate to store methods
   protected onContentFilterChange(filter: string): void {
-    this.contentFilter.set(filter);
+    this.postsStore.setContentFilter(filter);
   }
 
   protected onUserIdFilterChange(userId: number | null): void {
-    this.userIdFilter.set(userId);
-    // Reload posts with new user filter
-    this.loadPosts();
+    this.postsStore.setUserIdFilter(userId);
   }
 
   protected onShowOnlyFavoritesChange(showOnlyFavorites: boolean): void {
-    this.showOnlyFavorites.set(showOnlyFavorites);
+    this.postsStore.setShowOnlyFavorites(showOnlyFavorites);
   }
 
   protected onToggleFavorite(postId: number): void {
-    this.favoritesService.toggleFavorite(postId);
+    this.postsStore.toggleFavorite(postId);
   }
 
   protected isPostFavorite(postId: number): boolean {
-    return this.favoritesService.isPostFavorite(postId);
+    return this.postsStore.isPostFavorite()(postId);
   }
 
   protected onPostClick(postId: number): void {
     this.router.navigate(['/post', postId]);
   }
+
+  // Expose store signals to template
+  protected get posts() { return this.postsStore.filteredPosts; }
+  protected get loading() { return this.postsStore.loading; }
+  protected get error() { return this.postsStore.error; }
+  protected get users() { return this.postsStore.users; }
+  
+  // Expose filter values from store
+  protected get contentFilter() { return this.postsStore.contentFilter; }
+  protected get userIdFilter() { return this.postsStore.userIdFilter; }
+  protected get showOnlyFavorites() { return this.postsStore.showOnlyFavorites; }
 }

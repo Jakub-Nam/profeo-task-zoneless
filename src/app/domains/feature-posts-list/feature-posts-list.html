@@ -1,37 +1,34 @@
 <div class="min-h-screen flex flex-col px-4 py-8">
   <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">Posts List</h1>
 
-  <!-- Filter component -->
   <app-filters
     [users]="users()"
+    [contentFilter]="contentFilter()"
+    [userIdValue]="userIdFilter()"
+    [showFavoritesValue]="showOnlyFavorites()"
     (filterChange)="onContentFilterChange($event)"
     (userIdFilterChange)="onUserIdFilterChange($event)"
     (showOnlyFavoritesChange)="onShowOnlyFavoritesChange($event)"
   ></app-filters>
-  <!-- Loading State -->
   @if (loading()) {
   <div class="w-full text-center py-12">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
     <p class="text-gray-500 text-lg mt-4">Loading posts...</p>
   </div>
-  }
-
-  <!-- Error State -->
-  @else if (error()) {
+  } @else if (error()) {
   <div class="w-full text-center py-12">
     <p class="text-red-600 text-lg">{{ error() }}</p>
   </div>
-  }
-
-  <!-- Posts Grid -->
-  @else {
+  } @else {
   <div class="flex flex-wrap gap-4 justify-center items-start">
-    @for (post of filteredPosts(); track post.id) {
+    @for (post of posts(); track post.id) {
     <article
       class="w-[250px] h-[350px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 overflow-hidden flex flex-col cursor-pointer"
       (click)="onPostClick(post.id)"
     >
-      <div class="px-4 py-2 bg-gray-50 border-b border-gray-200 flex-shrink-0 flex justify-between items-center">
+      <div
+        class="px-4 py-2 bg-gray-50 border-b border-gray-200 flex-shrink-0 flex justify-between items-center"
+      >
         <span class="text-sm font-medium text-gray-500">Post #{{ post.id }}</span>
         <button
           (click)="onToggleFavorite(post.id); $event.stopPropagation()"
@@ -39,11 +36,7 @@
           [class.text-red-500]="isPostFavorite(post.id)"
           [class.text-gray-400]="!isPostFavorite(post.id)"
         >
-          @if (isPostFavorite(post.id)) {
-            ♥
-          } @else {
-            ♡
-          }
+          @if (isPostFavorite(post.id)) { ♥ } @else { ♡ }
         </button>
       </div>
 

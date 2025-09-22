@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, output, signal, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IUser } from '../../../shared/models/user.interface';
 
@@ -11,10 +11,11 @@ import { IUser } from '../../../shared/models/user.interface';
 })
 export class Filters {
   public readonly users = input<IUser[]>([]);
-
-  protected readonly filterText = signal('');
-  protected readonly userIdFilter = signal<number | null>(null);
-  protected readonly showOnlyFavorites = signal(false);
+  
+  // Input values from store
+  public readonly contentFilter = input<string>('');
+  public readonly userIdValue = input<number | null>(null);
+  public readonly showFavoritesValue = input<boolean>(false);
 
   public readonly filterChange = output<string>();
   public readonly userIdFilterChange = output<number | null>();
@@ -23,31 +24,25 @@ export class Filters {
   protected onFilterChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     const value = target.value;
-    this.filterText.set(value);
     this.filterChange.emit(value);
   }
 
-  protected onUserIdFilterChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const value = target.value ? parseInt(target.value, 10) : null;
-    this.userIdFilter.set(value);
-    this.userIdFilterChange.emit(value);
+  protected onUserIdFilterChange(value: string | number): void {
+    const userId = typeof value === 'string' ? (value ? parseInt(value, 10) : null) : value;
+    this.userIdFilterChange.emit(userId);
   }
 
   protected clearFilter(): void {
-    this.filterText.set('');
     this.filterChange.emit('');
   }
 
   protected clearUserFilter(): void {
-    this.userIdFilter.set(null);
     this.userIdFilterChange.emit(null);
   }
 
   protected onShowOnlyFavoritesChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     const value = target.checked;
-    this.showOnlyFavorites.set(value);
     this.showOnlyFavoritesChange.emit(value);
   }
 }
