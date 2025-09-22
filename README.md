@@ -1,100 +1,85 @@
-# Frontend Angular — Project Documentation (Template)
+# Posts List Application - Angular 20 Zoneless
 
-> Short description: a simple frontend built with Angular 20 (OnPush, zoneless), Tailwind v4, state management powered by Signal Store.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Requirements](#requirements)
-3. [Features](#features)
-4. [Example Folder Structure](#example-folder-structure)
-5. [Architecture — Services & State Management (Signal Store)](#architecture)
-6. [Injection Token for API URL](#injection-token-for-api-url)
-7. [Example Signal Store — posts & favorites](#example-signal-store)
-8. [Singleton Cache Service](#singleton-cache)
-9. [Components — OnPush & Zoneless Guidelines](#components)
-10. [Tailwind v4 — Theme Variables & Example Config](#tailwind-v4)
-11. [Gantt View Tab — Implementation Notes](#gantt)
-12. [Checklist for Project Adaptation](#checklist)
+> A modern Angular application showcasing posts management with three-level filtering, favorites system, and clean architecture using signals and zoneless design.
 
 ---
 
-## Overview
+## Features Implemented
 
-The project is a frontend blog/posts application with the following views:
+### 🔍 Three-Level Filtering System
 
-- Posts list
-- Post details
-- Filtering (search / tags)
-- Favorites list (add/remove)
-- Gantt view tab (timeline/schedule)
+1. **Content Filter** - Search in post title and body (client-side filtering)
+2. **User Filter** - Filter posts by user via API dropdown (server-side filtering)
+3. **Favorites Filter** - Show only favorited posts (client-side filtering)
 
-Application state is managed with **Signal Store** (based on Angular signals) — fetching posts and handling favorites.
+### ❤️ Favorites System
 
-The API base URL is provided via an **Injection Token**.
+- Click heart icons (♡/♥) to toggle favorites
+- Empty hearts (♡) for non-favorites, filled red hearts (♥) for favorites
+- Persistent storage in localStorage via singleton service
+- Real-time UI updates with signals
 
-The app targets Angular 20, with components using `ChangeDetectionStrategy.OnPush`. The architecture is **zoneless** — relying on signals and effects instead of Zone.js for UI updates.
+### 🏗️ Architecture
 
-Styling: **Tailwind v4**, theme variables (CSS custom properties + Tailwind config). Layouts are based on Flexbox.
-
----
-
-## Requirements
-
-- Node.js LTS
-- Angular CLI (optional) or `bootstrapApplication` (preferred for zoneless)
-- Angular 20
-- Tailwind v4
+- **Angular 20** with zoneless design pattern
+- **Signal-based** state management (no @ngrx/signals complexity)
+- **Standalone components** with proper dependency injection
+- **Clean separation** between API calls and local filtering
 
 ---
 
-## Features
+## Project Structure
 
-- Posts list (with optional pagination / virtual scroll)
-- Post details
-- Filtering (by text, tags)
-- Favorites: add/remove with localStorage persistence
-- Singleton cache service for API responses
-- Gantt view tab for timeline/scheduling
-
----
-
-## Example Folder Structure
-
-You can adapt this folder structure to your needs — this is just a template.
-
-src/
-├─ app/
-│ ├─ core/ # singletons, tokens, global services
-│ │ ├─ tokens.ts
-│ │ ├─ api/ # backend communication services
-│ │ │ └─ posts.service.ts
-│ │ └─ cache.service.ts # singleton cache
-│ ├─ features/
-│ │ ├─ posts/ # posts list and details
-│ │ │ ├─ components/
-│ │ │ │ ├─ posts-list/
-│ │ │ │ └─ post-details/
-│ │ │ ├─ stores/
-│ │ │ │ └─ posts.store.ts
-│ │ │ └─ posts.module.ts
-│ │ └─ gantt/ # gantt view tab
-│ │ └─ gantt.component.ts
-│ ├─ shared/ # shared components/pipes/directives
-│ └─ app.component.ts
-├─ assets/
-└─ styles/
-└─ tailwind.css
+```
+src/app/
+├── domains/
+│   ├── feature-posts-list/           # Main posts feature
+│   │   ├── feature-posts-list.ts     # Main component with filtering logic
+│   │   ├── feature-posts-list.html   # Template with responsive post grid
+│   │   └── internal/
+│   │       └── filters/              # Reusable filters component
+│   │           ├── filters.ts        # Three filter controls
+│   │           └── filters.html      # Responsive filter layout
+│   └── shared/                       # Shared resources
+│       ├── data/                     # Data access layer
+│       │   ├── posts.service.ts      # Posts API service
+│       │   └── favorites.service.ts  # Favorites singleton service
+│       └── models/                   # TypeScript interfaces
+│           ├── post.interface.ts     # IPost interface
+│           └── user.interface.ts     # IUser interface
+├── tokens/
+│   └── api.tokens.ts                 # Injection tokens for API URLs
+└── app.routes.ts                     # Application routing
+```
 
 ---
 
-## Architecture
+## Technical Implementation
 
-- **Services**: HttpClient wrappers (e.g., posts API). Provided as singletons in `core`.
-- **Injection Token**: used for base API URL (environment-dependent).
-- **Signal Store**: one per feature (e.g., posts), using `signal`, `computed`, `effect` and action methods (`fetch`, `addFavorite`, `removeFavorite`).
-- **Cache**: singleton cache service (`core/cache.service.ts`) prevents redundant API calls.
+### 🎯 Filtering Logic
 
----
+## Architecture Benefits
+
+✅ **Clean Separation of Concerns**
+
+- API calls vs local filtering clearly separated
+- Reusable components with proper inputs/outputs
+- Singleton services for shared state
+
+✅ **Performance Optimized**
+
+- Computed signals for efficient re-rendering
+- OnPush change detection strategy
+- Minimal API calls with smart caching
+
+✅ **Developer Experience**
+
+- TypeScript interfaces for type safety
+- Reactive patterns with signals
+- Clear folder structure and naming conventions
+
+✅ **User Experience**
+
+- Instant feedback on local filters
+- Persistent favorites across sessions
+- Responsive design for all devices
