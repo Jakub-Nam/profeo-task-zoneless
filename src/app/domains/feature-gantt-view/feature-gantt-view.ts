@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GanttService } from './services/gantt.service';
 import { IGanttData, IGanttPost } from './models/gantt.interface';
+import { FormatDatePipe } from '../shared/pipes/format-date.pipe';
 
 @Component({
   selector: 'app-feature-gantt-view',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormatDatePipe],
   templateUrl: './feature-gantt-view.html',
   styleUrl: './feature-gantt-view.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,22 +49,7 @@ export class FeatureGanttView {
     return (duration / timeline.totalDays) * 100;
   }
 
-  protected formatDate(date: Date): string {
-    return date.toLocaleDateString('pl-PL', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  }
-
-  protected formatDateShort(date: Date): string {
-    return date.toLocaleDateString('pl-PL', {
-      day: '2-digit',
-      month: '2-digit',
-    });
-  }
-
   protected shouldShowSeparateDates(post: IGanttPost, timeline: IGanttData['timeline']): boolean {
-    return this.getDuration(post, timeline) > 12; // Show separate dates if duration > 12% of timeline
+    return this.getDuration(post, timeline) > 12;
   }
 }

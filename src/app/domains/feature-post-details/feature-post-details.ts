@@ -29,18 +29,31 @@ export class FeaturePostDetails implements OnInit, OnDestroy {
   }
 
   protected getInitials(name: string): string {
-    return name.split(' ')
-      .map(n => n.charAt(0))
+    return name
+      .split(' ')
+      .map((n) => n.charAt(0))
       .join('')
       .substring(0, 2)
       .toUpperCase();
   }
 
   // Expose store signals to template
-  protected get post() { return this.postDetailsStore.post; }
-  protected get author() { return this.postDetailsStore.author; }
-  protected get comments() { return this.postDetailsStore.comments; }
-  protected get loading() { return this.postDetailsStore.loading; }
-  protected get error() { return this.postDetailsStore.error; }
-  protected get hasData() { return this.postDetailsStore.hasData; }
+  protected get post() {
+    return this.postDetailsStore.post;
+  }
+  protected get author() {
+    return this.postDetailsStore.author;
+  }
+  protected get comments() {
+    return this.postDetailsStore.comments;
+  }
+  protected get loading() {
+    return this.postDetailsStore.loading;
+  }
+  protected get error() {
+    return this.postDetailsStore.error;
+  }
+  protected get hasData() {
+    return this.postDetailsStore.hasData;
+  }
 }

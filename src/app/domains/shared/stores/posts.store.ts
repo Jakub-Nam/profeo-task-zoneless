@@ -1,5 +1,12 @@
 import { computed, inject, effect } from '@angular/core';
-import { signalStore, withState, withMethods, withComputed, patchState, withHooks } from '@ngrx/signals';
+import {
+  signalStore,
+  withState,
+  withMethods,
+  withComputed,
+  patchState,
+  withHooks,
+} from '@ngrx/signals';
 import { PostsService } from '../data/posts.service';
 import { IPost } from '../models/post.interface';
 import { IUser } from '../models/user.interface';
@@ -22,7 +29,6 @@ const POSTS_CACHE_KEY = 'posts_cache';
 const FAVORITES_KEY = 'favorite_posts';
 const CACHE_EXPIRY = 5 * 60 * 1000;
 
-// SessionStorage for posts cache
 const saveToSessionStorage = <T>(key: string, data: T): void => {
   try {
     sessionStorage.setItem(key, JSON.stringify(data));
@@ -41,7 +47,6 @@ const loadFromSessionStorage = <T>(key: string): T | null => {
   }
 };
 
-// LocalStorage for favorites (persistent)
 const saveToLocalStorage = <T>(key: string, data: T): void => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
@@ -71,7 +76,6 @@ const shouldRefreshCache = (
   return false;
 };
 
-// Initial state with sessionStorage data
 const getInitialState = (): PostsState => {
   const cachedData = loadFromSessionStorage<{
     posts: IPost[];
@@ -101,10 +105,6 @@ export const PostsStore = signalStore(
     filteredPosts: computed(() => {
       let posts = store.posts();
 
-      // Note: userId filtering is done at API level via getPostsByUser(userId)
-      // No need for local filtering by userId here
-
-      // Filter by content if set
       const contentFilter = store.contentFilter().toLowerCase();
       if (contentFilter) {
         posts = posts.filter(
@@ -114,7 +114,6 @@ export const PostsStore = signalStore(
         );
       }
 
-      // Filter favorites if enabled
       if (store.showOnlyFavorites()) {
         const favorites = store.favoritePosts();
         posts = posts.filter((post) => favorites.includes(post.id));
@@ -146,7 +145,6 @@ export const PostsStore = signalStore(
                 lastUserIdFilter: userId,
               });
 
-              // Save to sessionStorage
               saveToSessionStorage(POSTS_CACHE_KEY, {
                 posts,
                 lastFetchTime: now,
@@ -249,6 +247,6 @@ export const PostsStore = signalStore(
         const favorites = store.favoritePosts();
         saveToLocalStorage(FAVORITES_KEY, favorites);
       });
-    }
+    },
   })
 );

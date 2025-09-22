@@ -2,112 +2,119 @@
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Loading State -->
     @if (loading()) {
-      <div class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+    <div class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
     }
 
     <!-- Error State -->
     @if (error()) {
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-        <p class="text-red-800">{{ error() }}</p>
-        <button 
-          routerLink="/" 
-          class="mt-2 text-blue-600 hover:text-blue-800 underline"
-        >
-          Back to posts
-        </button>
-      </div>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <p class="text-red-800">{{ error() }}</p>
+      <button routerLink="/" class="mt-2 text-blue-600 hover:text-blue-800 underline">
+        Back to posts
+      </button>
+    </div>
     }
 
     <!-- Main Content -->
     @if (hasData()) {
-      <!-- Back Navigation -->
-      <div class="mb-6">
-        <div class="flex items-center justify-between">
-          <button 
-            routerLink="/" 
-            class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back to posts
-          </button>
-          
-          <button 
-            routerLink="/gantt" 
-            class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Gantt View
-          </button>
-        </div>
+    <!-- Back Navigation -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <button
+          routerLink="/"
+          class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            ></path>
+          </svg>
+          Back to posts
+        </button>
+
+        <button
+          routerLink="/gantt"
+          class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            ></path>
+          </svg>
+          Gantt View
+        </button>
       </div>
+    </div>
 
-      <!-- Post Details -->
-      <article class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-        <div class="p-6">
-          <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ post()?.title }}</h1>
-          
-          <!-- Author Info -->
-          @if (author()) {
-            <div class="flex items-center mb-6 p-4 bg-gray-50 rounded-lg">
-              <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                <span class="text-white font-semibold text-lg">
-                  {{ author()?.name?.charAt(0) }}
-                </span>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-900">{{ author()?.name }}</h3>
-                <p class="text-gray-600">@{{ author()?.username }}</p>
-                <p class="text-gray-500 text-sm">{{ author()?.email }}</p>
-              </div>
-            </div>
-          }
+    <!-- Post Details -->
+    <article class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+      <div class="p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ post()?.title }}</h1>
 
-          <!-- Post Body -->
-          <div class="prose max-w-none">
-            <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ post()?.body }}</p>
+        <!-- Author Info -->
+        @if (author()) {
+        <div class="flex items-center mb-6 p-4 bg-gray-50 rounded-lg">
+          <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4">
+            <span class="text-white font-semibold text-lg">
+              {{ author()?.name?.charAt(0) }}
+            </span>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">{{ author()?.name }}</h3>
+            <p class="text-gray-600">@{{ author()?.username }}</p>
+            <p class="text-gray-500 text-sm">{{ author()?.email }}</p>
           </div>
         </div>
-      </article>
+        }
 
-      <!-- Comments Section -->
-      <section class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="p-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6">
-            Comments ({{ comments().length }})
-          </h2>
+        <!-- Post Body -->
+        <div class="prose max-w-none">
+          <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ post()?.body }}</p>
+        </div>
+      </div>
+    </article>
 
-          @if (comments().length === 0) {
-            <p class="text-gray-500 text-center py-8">No comments yet.</p>
-          } @else {
-            <div class="space-y-6">
-              @for (comment of comments(); track comment.id) {
-                <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
-                  <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span class="text-gray-700 font-medium text-sm">
-                        {{ getInitials(comment.name) }}
-                      </span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="mb-2">
-                        <h4 class="font-semibold text-gray-900">{{ comment.name }}</h4>
-                        <p class="text-gray-500 text-sm">{{ comment.email }}</p>
-                      </div>
-                      <p class="text-gray-700 leading-relaxed">{{ comment.body }}</p>
-                    </div>
-                  </div>
+    <!-- Comments Section -->
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Comments ({{ comments().length }})</h2>
+
+        @if (comments().length === 0) {
+        <p class="text-gray-500 text-center py-8">No comments yet.</p>
+        } @else {
+        <div class="space-y-6">
+          @for (comment of comments(); track comment.id) {
+          <div class="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+            <div class="flex items-start space-x-4">
+              <div
+                class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-gray-700 font-medium text-sm">
+                  {{ getInitials(comment.name) }}
+                </span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="mb-2">
+                  <h4 class="font-semibold text-gray-900">{{ comment.name }}</h4>
+                  <p class="text-gray-500 text-sm">{{ comment.email }}</p>
                 </div>
-              }
+                <p class="text-gray-700 leading-relaxed">{{ comment.body }}</p>
+              </div>
             </div>
+          </div>
           }
         </div>
-      </section>
+        }
+      </div>
+    </section>
     }
   </div>
 </div>

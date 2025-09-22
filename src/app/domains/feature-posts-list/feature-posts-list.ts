@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { PostsStore } from '../shared/stores/posts.store';
 import { UsersStore } from '../shared/stores/users.store';
 import { Filters } from './internal/filters/filters';
@@ -51,13 +46,27 @@ export class FeaturePostsList implements OnInit {
   }
 
   // Expose store signals to template
-  protected get posts() { return this.postsStore.filteredPosts; }
-  protected get loading() { return this.postsStore.loading; }
-  protected get error() { return this.postsStore.error; }
-  protected get users() { return this.usersStore.users; }
-  
+  protected get posts() {
+    return this.postsStore.filteredPosts;
+  }
+  protected get loading() {
+    return this.postsStore.loading;
+  }
+  protected get error() {
+    return this.postsStore.error;
+  }
+  protected get users() {
+    return this.usersStore.users;
+  }
+
   // Expose filter values from store
-  protected get contentFilter() { return this.postsStore.contentFilter; }
-  protected get userIdFilter() { return this.postsStore.userIdFilter; }
-  protected get showOnlyFavorites() { return this.postsStore.showOnlyFavorites; }
+  protected get contentFilter() {
+    return this.postsStore.contentFilter;
+  }
+  protected get userIdFilter() {
+    return this.postsStore.userIdFilter;
+  }
+  protected get showOnlyFavorites() {
+    return this.postsStore.showOnlyFavorites;
+  }
 }

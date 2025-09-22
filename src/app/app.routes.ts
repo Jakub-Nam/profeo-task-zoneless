@@ -16,8 +16,6 @@ export const routes: Routes = [
   {
     path: 'gantt',
     loadComponent: () =>
-      import('./domains/feature-gantt-view/feature-gantt-view').then(
-        (m) => m.FeatureGanttView
-      ),
+      import('./domains/feature-gantt-view/feature-gantt-view').then((m) => m.FeatureGanttView),
   },
 ];

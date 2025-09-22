@@ -1,14 +1,13 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Posts Gantt View</h1>
           <p class="text-gray-600 mt-2">Timeline overview of all posts with mocked project dates</p>
         </div>
-        <button 
-          routerLink="/" 
+        <button
+          routerLink="/"
           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -19,7 +18,6 @@
       </div>
     </div>
 
-    <!-- Legend -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-3">Legend</h3>
       <div class="flex flex-wrap gap-6">
@@ -42,94 +40,91 @@
       </div>
     </div>
 
-    <!-- Gantt Chart -->
     @if (ganttData(); as data) {
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <!-- Timeline Header -->
-        <div class="bg-gray-50 border-b border-gray-200 p-4">
-          <div class="flex justify-between items-center text-sm text-gray-600">
-            <span>Timeline: {{ formatDate(data.timeline.start) }} - {{ formatDate(data.timeline.end) }}</span>
-            <span>Total: {{ data.timeline.totalDays }} days | {{ data.posts.length }} posts</span>
-          </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gray-50 border-b border-gray-200 p-4">
+        <div class="flex justify-between items-center text-sm text-gray-600">
+          <span>Timeline: {{ data.timeline.start | formatDate }} - {{ data.timeline.end | formatDate }}</span>
+          <span>Total: {{ data.timeline.totalDays }} days | {{ data.posts.length }} posts</span>
         </div>
+      </div>
 
-        <!-- Gantt Content -->
-        <div class="p-4">
-          <div class="space-y-6">
-            @for (post of data.posts; track post.id) {
-              <div class="relative">
-                <!-- Post Info -->
-                <div class="flex items-center mb-2">
-                  <div class="w-64 pr-4 flex-shrink-0">
-                    <h4 class="font-medium text-gray-900 text-sm truncate" [title]="post.title">
-                      Post #{{ post.id }}: {{ post.title }}
-                    </h4>
-                    <div class="flex items-center mt-1 space-x-2">
-                      <span class="text-xs px-2 py-1 rounded-full" 
-                            [style.background-color]="getCategoryColor(post.category)"
-                            [style.color]="'white'">
-                        {{ post.category }}
-                      </span>
-                      <span class="text-xs text-gray-500">{{ post.progress }}%</span>
-                    </div>
-                  </div>
-
-                  <!-- Timeline Bar -->
-                  <div class="flex-1 relative h-8 bg-gray-100 rounded">
-                    <!-- Task Bar -->
-                    <div 
-                      class="absolute top-0 h-full rounded shadow-sm flex items-center justify-center"
-                      [style.left.%]="getDayPosition(post.startDate, data.timeline)"
-                      [style.width.%]="getDuration(post, data.timeline)"
-                      [style.background-color]="getCategoryColor(post.category)"
-                      [title]="formatDate(post.startDate) + ' - ' + formatDate(post.endDate)"
-                    >
-                      <!-- Progress Bar -->
-                      <div 
-                        class="absolute top-0 left-0 h-full bg-black bg-opacity-20 rounded-l"
-                        [style.width.%]="post.progress"
-                      ></div>
-                      
-                      <!-- Task Text -->
-                      <span class="relative text-xs text-white font-medium px-2 truncate">
-                        {{ post.progress }}%
-                      </span>
-                    </div>
-
-                    <!-- Date Labels -->
-                    @if (shouldShowSeparateDates(post, data.timeline)) {
-                      <div class="absolute -bottom-6 text-xs text-gray-500"
-                           [style.left.%]="getDayPosition(post.startDate, data.timeline)">
-                        {{ formatDateShort(post.startDate) }}
-                      </div>
-                      <div class="absolute -bottom-6 text-xs text-gray-500"
-                           [style.left.%]="getDayPosition(post.endDate, data.timeline)"
-                           style="transform: translateX(-100%);">
-                        {{ formatDateShort(post.endDate) }}
-                      </div>
-                    } @else {
-                      <div class="absolute -bottom-6 text-xs text-gray-500 whitespace-nowrap"
-                           [style.left.%]="getDayPosition(post.startDate, data.timeline)"
-                           style="transform: translateX(-50%);">
-                        {{ formatDateShort(post.startDate) }}-{{ formatDateShort(post.endDate) }}
-                      </div>
-                    }
-                  </div>
+      <div class="p-4">
+        <div class="space-y-6">
+          @for (post of data.posts; track post.id) {
+          <div class="relative">
+            <div class="flex items-center mb-2">
+              <div class="w-64 pr-4 flex-shrink-0">
+                <h4 class="font-medium text-gray-900 text-sm truncate" [title]="post.title">
+                  Post #{{ post.id }}: {{ post.title }}
+                </h4>
+                <div class="flex items-center mt-1 space-x-2">
+                  <span
+                    class="text-xs px-2 py-1 rounded-full text-white"
+                    [style.background-color]="getCategoryColor(post.category)"
+                  >
+                    {{ post.category }}
+                  </span>
+                  <span class="text-xs text-gray-500">{{ post.progress }}%</span>
                 </div>
-                <div class="h-8"></div> <!-- Spacer for date labels -->
               </div>
-            }
+
+              <div class="flex-1 relative h-8 bg-gray-100 rounded">
+                <div
+                  class="absolute top-0 h-full rounded shadow-sm flex items-center justify-center"
+                  [style.left.%]="getDayPosition(post.startDate, data.timeline)"
+                  [style.width.%]="getDuration(post, data.timeline)"
+                  [style.background-color]="getCategoryColor(post.category)"
+                  [title]="(post.startDate | formatDate) + ' - ' + (post.endDate | formatDate)"
+                >
+                  <div
+                    class="absolute top-0 left-0 h-full bg-black bg-opacity-20 rounded-l"
+                    [style.width.%]="post.progress"
+                  ></div>
+
+                  <span class="relative text-xs text-white font-medium px-2 truncate">
+                    {{ post.progress }}%
+                  </span>
+                </div>
+
+                @if (shouldShowSeparateDates(post, data.timeline)) {
+                <div
+                  class="absolute -bottom-6 text-xs text-gray-500"
+                  [style.left.%]="getDayPosition(post.startDate, data.timeline)"
+                >
+                  {{ post.startDate | formatDate : 'short' }}
+                </div>
+                <div
+                  class="absolute -bottom-6 text-xs text-gray-500"
+                  [style.left.%]="getDayPosition(post.endDate, data.timeline)"
+                  style="transform: translateX(-100%)"
+                >
+                  {{ post.endDate | formatDate : 'short' }}
+                </div>
+                } @else {
+                <div
+                  class="absolute -bottom-6 text-xs text-gray-500 whitespace-nowrap"
+                  [style.left.%]="getDayPosition(post.startDate, data.timeline)"
+                  style="transform: translateX(-50%)"
+                >
+                  {{ post.startDate | formatDate : 'short' }}-{{ post.endDate | formatDate : 'short' }}
+                </div>
+                }
+              </div>
+            </div>
+            <div class="h-8"></div>
           </div>
+          }
         </div>
       </div>
+    </div>
     } @else {
-      <!-- Loading State -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-        <div class="flex justify-center items-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span class="ml-4 text-gray-600">Loading Gantt data...</span>
-        </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <div class="flex justify-center items-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <span class="ml-4 text-gray-600">Loading Gantt data...</span>
       </div>
+    </div>
     }
   </div>
 </div>
