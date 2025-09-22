@@ -1,14 +1,20 @@
 import { computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { combineLatest, EMPTY, pipe, switchMap, tap, catchError, of } from 'rxjs';
+import { combineLatest, EMPTY, pipe, switchMap, tap, catchError, of, map } from 'rxjs';
 import { PostsService } from '../data/posts.service';
+import { UsersStore } from './users.store';
 import type { IPost, IUser, IComment } from '../models';
 
 interface PostDetailsState {
   post: IPost | null;
-  author: IUser | null;
   comments: IComment[];
   loading: boolean;
   error: string | null;
@@ -16,7 +22,6 @@ interface PostDetailsState {
 
 const initialState: PostDetailsState = {
   post: null,
-  author: null,
   comments: [],
   loading: false,
   error: null,
@@ -34,25 +39,20 @@ export const PostDetailsStore = signalStore(
             postsService.getPostById(postId),
             postsService.getPostComments(postId),
           ]).pipe(
-            switchMap(([post, comments]) =>
-              postsService.getUserById(post.userId).pipe(
-                tap((author) => 
-                  patchState(store, { 
-                    post, 
-                    author, 
-                    comments, 
-                    loading: false 
-                  })
-                ),
-                catchError((error) => {
-                  patchState(store, { 
-                    error: 'Failed to load post details', 
-                    loading: false 
-                  });
-                  return EMPTY;
-                })
-              )
-            )
+            tap(([post, comments]) =>
+              patchState(store, {
+                post,
+                comments,
+                loading: false,
+              })
+            ),
+            catchError((error) => {
+              patchState(store, {
+                error: 'Failed to load post details',
+                loading: false,
+              });
+              return EMPTY;
+            })
           )
         )
       )
@@ -60,10 +60,12 @@ export const PostDetailsStore = signalStore(
 
     reset: () => patchState(store, initialState),
   })),
-  withComputed((state) => ({
-    hasData: computed(() => 
-      state.post() !== null && 
-      state.author() !== null
-    ),
+  withComputed((state, usersStore = inject(UsersStore)) => ({
+    author: computed(() => {
+      const post = state.post();
+      const users = usersStore.users();
+      return post ? users.find((user: IUser) => user.id === post.userId) || null : null;
+    }),
+    hasData: computed(() => state.post() !== null),
   }))
 );

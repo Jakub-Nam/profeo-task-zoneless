@@ -8,7 +8,6 @@ import { pipe, switchMap, tap, catchError, EMPTY } from 'rxjs';
 
 export interface PostsState {
   posts: IPost[];
-  users: IUser[];
   loading: boolean;
   error: string | null;
   contentFilter: string;
@@ -84,7 +83,6 @@ const getInitialState = (): PostsState => {
 
   return {
     posts: cachedData?.posts || [],
-    users: [], // Will be loaded by init method
     loading: false,
     error: null,
     contentFilter: '',
@@ -131,22 +129,6 @@ export const PostsStore = signalStore(
     }),
   })),
   withMethods((store, postsService = inject(PostsService)) => {
-    const loadUsers = rxMethod<void>(
-      pipe(
-        switchMap(() => {
-          return postsService.getUsers().pipe(
-            tap((users) => {
-              patchState(store, { users });
-            }),
-            catchError((error) => {
-              console.error('Error loading users:', error);
-              return EMPTY;
-            })
-          );
-        })
-      )
-    );
-
     const loadPosts = rxMethod<number | null>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
@@ -185,7 +167,6 @@ export const PostsStore = signalStore(
     );
 
     return {
-      loadUsers,
       loadPosts,
 
       // Content filter methods
@@ -247,9 +228,6 @@ export const PostsStore = signalStore(
 
       // Initialize store
       init: () => {
-        // Always load users first (they're needed for UI)
-        loadUsers();
-        
         const shouldRefresh = shouldRefreshCache(
           store.lastFetchTime(),
           store.userIdFilter(),

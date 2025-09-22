@@ -5,6 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { PostsStore } from '../shared/stores/posts.store';
+import { UsersStore } from '../shared/stores/users.store';
 import { Filters } from './internal/filters/filters';
 import { Router } from '@angular/router';
 
@@ -17,6 +18,7 @@ import { Router } from '@angular/router';
 })
 export class FeaturePostsList implements OnInit {
   private readonly postsStore = inject(PostsStore);
+  private readonly usersStore = inject(UsersStore);
   private readonly router = inject(Router);
 
   public ngOnInit(): void {
@@ -52,7 +54,7 @@ export class FeaturePostsList implements OnInit {
   protected get posts() { return this.postsStore.filteredPosts; }
   protected get loading() { return this.postsStore.loading; }
   protected get error() { return this.postsStore.error; }
-  protected get users() { return this.postsStore.users; }
+  protected get users() { return this.usersStore.users; }
   
   // Expose filter values from store
   protected get contentFilter() { return this.postsStore.contentFilter; }
