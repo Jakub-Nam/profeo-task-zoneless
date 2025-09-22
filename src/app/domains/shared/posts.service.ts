@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { POSTS_API_URL } from '../../tokens/api.tokens';
+import { API_CONFIG } from '../../tokens/api.tokens';
 import { IPost } from './models/post.interface';
 import { IUser } from './models/user.interface';
 
@@ -10,17 +10,17 @@ import { IUser } from './models/user.interface';
 })
 export class PostsService {
   private readonly http = inject(HttpClient);
-  private readonly postsApiUrl = inject(POSTS_API_URL);
+  private readonly apiConfig = inject(API_CONFIG);
 
   public getPosts(): Observable<IPost[]> {
-    return this.http.get<IPost[]>(this.postsApiUrl);
+    return this.http.get<IPost[]>(this.apiConfig.posts);
   }
 
   public getPostsByUser(userId: number): Observable<IPost[]> {
-    return this.http.get<IPost[]>(`${this.postsApiUrl}?userId=${userId}`);
+    return this.http.get<IPost[]>(`${this.apiConfig.posts}?userId=${userId}`);
   }
 
   public getUsers(): Observable<IUser[]> {
-    return this.http.get<IUser[]>('https://jsonplaceholder.typicode.com/users');
+    return this.http.get<IUser[]>(this.apiConfig.users);
   }
 }
