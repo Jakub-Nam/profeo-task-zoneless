@@ -12,7 +12,6 @@ import { IUser } from '../../../shared/models/user.interface';
 export class Filters {
   public readonly users = input<IUser[]>([]);
 
-  // Input values from store
   public readonly contentFilter = input<string>('');
   public readonly userIdValue = input<number | null>(null);
   public readonly showFavoritesValue = input<boolean>(false);

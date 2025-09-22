@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, WritableSignal } from '@ang
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { GanttService } from './services/gantt.service';
+import { GanttService } from './data/gantt.service';
 import { IGanttData, IGanttPost } from './models/gantt.interface';
 import { FormatDatePipe } from '../shared/pipes/format-date.pipe';
 
@@ -20,19 +20,19 @@ export class FeatureGanttView {
 
   protected getCategoryColor(category: IGanttPost['category']): string {
     const colors = {
-      planning: '#fbbf24', // yellow-400
-      development: '#3b82f6', // blue-500
-      review: '#f59e0b', // amber-500
-      completed: '#10b981', // emerald-500
+      planning: '#fbbf24',
+      development: '#3b82f6',
+      review: '#f59e0b',
+      completed: '#10b981',
     };
     return colors[category];
   }
 
   protected getProgressColor(progress: number): string {
-    if (progress >= 80) return '#10b981'; // green
-    if (progress >= 50) return '#f59e0b'; // amber
-    if (progress >= 20) return '#3b82f6'; // blue
-    return '#ef4444'; // red
+    if (progress >= 80) return '#10b981';
+    if (progress >= 50) return '#f59e0b';
+    if (progress >= 20) return '#3b82f6';
+    return '#ef4444';
   }
 
   protected getDayPosition(date: Date, timeline: IGanttData['timeline']): number {

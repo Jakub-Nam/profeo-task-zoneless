@@ -17,10 +17,9 @@ export class FeaturePostsList implements OnInit {
   private readonly router = inject(Router);
 
   public ngOnInit(): void {
-    this.postsStore.init(); // Store will now load both users and posts
+    this.postsStore.init();
   }
 
-  // Delegate to store methods
   protected onContentFilterChange(filter: string): void {
     this.postsStore.setContentFilter(filter);
   }
@@ -45,7 +44,6 @@ export class FeaturePostsList implements OnInit {
     this.router.navigate(['/posts', postId]);
   }
 
-  // Expose store signals to template
   protected get posts() {
     return this.postsStore.filteredPosts;
   }
@@ -59,7 +57,6 @@ export class FeaturePostsList implements OnInit {
     return this.usersStore.users;
   }
 
-  // Expose filter values from store
   protected get contentFilter() {
     return this.postsStore.contentFilter;
   }

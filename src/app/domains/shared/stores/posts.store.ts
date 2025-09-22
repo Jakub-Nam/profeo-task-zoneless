@@ -167,7 +167,6 @@ export const PostsStore = signalStore(
     return {
       loadPosts,
 
-      // Content filter methods
       setContentFilter: (filter: string) => {
         patchState(store, { contentFilter: filter });
       },
@@ -176,7 +175,6 @@ export const PostsStore = signalStore(
         patchState(store, { contentFilter: '' });
       },
 
-      // User filter methods
       setUserIdFilter: (userId: number | null) => {
         const shouldRefresh = shouldRefreshCache(
           store.lastFetchTime(),
@@ -188,7 +186,6 @@ export const PostsStore = signalStore(
           patchState(store, { userIdFilter: userId });
           loadPosts(userId);
         } else {
-          // Just update the filter without API call
           patchState(store, { userIdFilter: userId });
         }
       },
@@ -207,7 +204,6 @@ export const PostsStore = signalStore(
         }
       },
 
-      // Favorites methods
       toggleFavorite: (postId: number) => {
         const favorites = store.favoritePosts();
         const isFavorite = favorites.includes(postId);
@@ -217,7 +213,6 @@ export const PostsStore = signalStore(
           : [...favorites, postId];
 
         patchState(store, { favoritePosts: newFavorites });
-        // Side effect handled by effect() below
       },
 
       setShowOnlyFavorites: (show: boolean) => {
@@ -239,10 +234,8 @@ export const PostsStore = signalStore(
     };
   }),
 
-  // Hooks for lifecycle and effects
   withHooks({
     onInit(store) {
-      // Auto-save favorites to localStorage on every change
       effect(() => {
         const favorites = store.favoritePosts();
         saveToLocalStorage(FAVORITES_KEY, favorites);
