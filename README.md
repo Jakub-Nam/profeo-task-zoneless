@@ -1,59 +1,100 @@
-# ProfeoTaskZoneless
+# Frontend Angular — Project Documentation (Template)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
+> Short description: a simple frontend built with Angular 20 (OnPush, zoneless), Tailwind v4, state management powered by Signal Store.
 
-## Development server
+---
 
-To start a local development server, run:
+## Table of Contents
 
-```bash
-ng serve
-```
+1. [Overview](#overview)
+2. [Requirements](#requirements)
+3. [Features](#features)
+4. [Example Folder Structure](#example-folder-structure)
+5. [Architecture — Services & State Management (Signal Store)](#architecture)
+6. [Injection Token for API URL](#injection-token-for-api-url)
+7. [Example Signal Store — posts & favorites](#example-signal-store)
+8. [Singleton Cache Service](#singleton-cache)
+9. [Components — OnPush & Zoneless Guidelines](#components)
+10. [Tailwind v4 — Theme Variables & Example Config](#tailwind-v4)
+11. [Gantt View Tab — Implementation Notes](#gantt)
+12. [Checklist for Project Adaptation](#checklist)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Overview
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The project is a frontend blog/posts application with the following views:
 
-```bash
-ng generate component component-name
-```
+- Posts list
+- Post details
+- Filtering (search / tags)
+- Favorites list (add/remove)
+- Gantt view tab (timeline/schedule)
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Application state is managed with **Signal Store** (based on Angular signals) — fetching posts and handling favorites.
 
-```bash
-ng generate --help
-```
+The API base URL is provided via an **Injection Token**.
 
-## Building
+The app targets Angular 20, with components using `ChangeDetectionStrategy.OnPush`. The architecture is **zoneless** — relying on signals and effects instead of Zone.js for UI updates.
 
-To build the project run:
+Styling: **Tailwind v4**, theme variables (CSS custom properties + Tailwind config). Layouts are based on Flexbox.
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Requirements
 
-## Running unit tests
+- Node.js LTS
+- Angular CLI (optional) or `bootstrapApplication` (preferred for zoneless)
+- Angular 20
+- Tailwind v4
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
+## Features
 
-## Running end-to-end tests
+- Posts list (with optional pagination / virtual scroll)
+- Post details
+- Filtering (by text, tags)
+- Favorites: add/remove with localStorage persistence
+- Singleton cache service for API responses
+- Gantt view tab for timeline/scheduling
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## Example Folder Structure
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+You can adapt this folder structure to your needs — this is just a template.
 
-## Additional Resources
+src/
+├─ app/
+│ ├─ core/ # singletons, tokens, global services
+│ │ ├─ tokens.ts
+│ │ ├─ api/ # backend communication services
+│ │ │ └─ posts.service.ts
+│ │ └─ cache.service.ts # singleton cache
+│ ├─ features/
+│ │ ├─ posts/ # posts list and details
+│ │ │ ├─ components/
+│ │ │ │ ├─ posts-list/
+│ │ │ │ └─ post-details/
+│ │ │ ├─ stores/
+│ │ │ │ └─ posts.store.ts
+│ │ │ └─ posts.module.ts
+│ │ └─ gantt/ # gantt view tab
+│ │ └─ gantt.component.ts
+│ ├─ shared/ # shared components/pipes/directives
+│ └─ app.component.ts
+├─ assets/
+└─ styles/
+└─ tailwind.css
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+## Architecture
+
+- **Services**: HttpClient wrappers (e.g., posts API). Provided as singletons in `core`.
+- **Injection Token**: used for base API URL (environment-dependent).
+- **Signal Store**: one per feature (e.g., posts), using `signal`, `computed`, `effect` and action methods (`fetch`, `addFavorite`, `removeFavorite`).
+- **Cache**: singleton cache service (`core/cache.service.ts`) prevents redundant API calls.
+
+---
